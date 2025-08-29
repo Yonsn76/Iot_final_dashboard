@@ -1,0 +1,300 @@
+@import "tailwindcss";
+
+/* Configuración personalizada del tema para Tailwind CSS 4 */
+@theme {
+  /* Espaciado personalizado */
+  --spacing-18: 4.5rem;
+  --spacing-88: 22rem;
+  
+  /* Tamaños de fuente */
+  --font-size-xxs: 0.625rem;
+  
+  /* Liquid Glass Theme Colors - Black & White Only */
+  --color-glass-bg: rgba(255, 255, 255, 0.1);
+  --color-glass-border: rgba(255, 255, 255, 0.2);
+  --color-glass-shadow: rgba(0, 0, 0, 0.1);
+  
+  --color-primary: #000000;
+  --color-primary-light: #333333;
+  --color-secondary: #666666;
+  --color-accent: #000000;
+  
+  /* Efectos glass morphism mejorados */
+  --glass-bg-light: rgba(255, 255, 255, 0.15);
+  --glass-bg-dark: rgba(0, 0, 0, 0.25);
+  --glass-border-light: rgba(255, 255, 255, 0.25);
+  --glass-border-dark: rgba(255, 255, 255, 0.15);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  --glass-blur: blur(20px);
+  
+  /* Sombras personalizadas */
+  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.1);
+  --shadow-glass-lg: 0 16px 64px rgba(0, 0, 0, 0.15);
+}
+
+/* Reset básico para compatibilidad */
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+html.dark {
+  background: #000000 !important;
+}
+
+body {
+  font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: all 0.3s ease;
+  overflow-x: hidden;
+  background: #FFFFFF; /* FONDO BLANCO LITERAL para modo claro */
+  min-height: 100vh;
+  color: #000000;
+}
+
+html.dark body {
+  background: #000000 !important; /* FONDO NEGRO LITERAL para modo oscuro */
+  color: #FFFFFF !important;
+}
+
+body.dark {
+  background: #000000 !important; /* FONDO NEGRO LITERAL para modo oscuro */
+  color: #FFFFFF !important;
+}
+
+#root {
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Estilos para componentes glass morphism */
+.glass-panel {
+  background: var(--glass-bg-light);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border-light);
+  box-shadow: var(--glass-shadow);
+  transition: all 0.3s ease;
+  border-radius: 16px;
+}
+
+.dark .glass-panel {
+  background: var(--glass-bg-dark);
+  border: 1px solid var(--glass-border-dark);
+}
+
+/* Asegurar que el tema oscuro funcione correctamente */
+html.dark {
+  background: #000000 !important;
+}
+
+html.dark body {
+  background: #000000 !important;
+  color: #FFFFFF !important;
+}
+
+html.dark #root {
+  background: #000000 !important;
+}
+
+/* Asegurar que el tema claro tenga texto negro */
+html.light {
+  background: #FFFFFF !important;
+}
+
+html.light body {
+  background: #FFFFFF !important;
+  color: #000000 !important;
+}
+
+html.light #root {
+  background: #FFFFFF !important;
+}
+
+/* Forzar colores para modo oscuro */
+.dark {
+  background: #000000 !important;
+}
+
+.dark body {
+  background: #000000 !important;
+  color: #FFFFFF !important;
+}
+
+.dark #root {
+  background: #000000 !important;
+}
+
+/* Asegurar que todos los elementos en modo oscuro tengan texto blanco */
+.dark * {
+  color: #FFFFFF !important;
+}
+
+.dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
+  color: #FFFFFF !important;
+}
+
+.dark p, .dark span, .dark div, .dark label {
+  color: #FFFFFF !important;
+}
+
+.dark button, .dark input, .dark select, .dark textarea {
+  color: #FFFFFF !important;
+}
+
+/* Forzar colores para modo claro */
+.light {
+  background: #FFFFFF !important;
+}
+
+.light body {
+  background: #FFFFFF !important;
+  color: #000000 !important;
+}
+
+.light #root {
+  background: #FFFFFF !important;
+}
+
+/* Asegurar que todos los elementos en modo claro tengan texto negro */
+.light h1, .light h2, .light h3, .light h4, .light h5, .light h6 {
+  color: #000000 !important;
+}
+
+.light p, .light span, .light label {
+  color: #000000 !important;
+}
+
+.light button, .light input, .light select, .light textarea {
+  color: #000000 !important;
+}
+
+/* Animaciones personalizadas */
+@keyframes float {
+  0%, 100% { 
+    transform: translateY(0px) rotate(0deg); 
+  }
+  50% { 
+    transform: translateY(-20px) rotate(5deg); 
+  }
+}
+
+@keyframes pulse-slow {
+  0%, 100% { 
+    opacity: 1; 
+  }
+  50% { 
+    opacity: 0.5; 
+  }
+}
+
+@keyframes gradient-shift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 3s ease-in-out infinite;
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient-shift 4s ease infinite;
+}
+
+/* Utilidades para efectos glass */
+.glass-effect {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dark .glass-effect {
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+/* Efecto glass mejorado para modo claro */
+.light .glass-effect {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+}
+
+/* Efectos adicionales para tarjetas */
+.glass-effect:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+.dark .glass-effect:hover {
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+}
+
+.light .glass-effect:hover {
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+}
+
+/* Scrollbar personalizado */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Sombras personalizadas */
+.shadow-2xl {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.shadow-3xl {
+  box-shadow: 0 35px 60px -12px rgba(0, 0, 0, 0.3);
+}
+
+.hover\:shadow-3xl:hover {
+  box-shadow: 0 35px 60px -12px rgba(0, 0, 0, 0.3);
+}
