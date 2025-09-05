@@ -71,13 +71,20 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPage, onPageChange }) =
             <div className="flex items-center justify-between">
               {/* Logo */}
               <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 glass-effect border border-white/20 flex items-center justify-center shadow-lg">
-                  <Activity size={24} className={themeMode === 'light' ? 'text-black' : 'text-white'} />
+                <div className="w-12 h-12 glass-effect border border-white/20 flex items-center justify-center shadow-lg overflow-hidden rounded-xl">
+                  <img 
+                    src="/logo.jpg" 
+                    alt="SensorSP Logo" 
+                    className="w-full h-full object-cover rounded-xl"
+                  />
                 </div>
                 <div>
                   <h1 className="text-xl font-black text-gray-900 dark:text-white">
-                    IoT Dashboard
+                    SensorSP
                   </h1>
+                  <p className="text-xs text-gray-600 dark:text-gray-400 font-medium">
+                    Centro de Administración del Sensor IoT
+                  </p>
                 </div>
               </div>
               

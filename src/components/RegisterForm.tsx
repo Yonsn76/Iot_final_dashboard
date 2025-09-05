@@ -132,13 +132,17 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onBackToLogin }) => 
           <div className="mx-auto w-20 h-20 mb-6 relative">
             <div className="absolute inset-0 bg-gradient-to-br from-gray-800 to-black rounded-2xl rotate-6 transform"></div>
             <div className="absolute inset-0 bg-gradient-to-br from-gray-600 to-gray-800 rounded-2xl -rotate-6 transform"></div>
-            <div className="relative bg-gradient-to-br from-gray-600 to-gray-800 dark:from-gray-800 dark:to-black rounded-2xl flex items-center justify-center text-white">
-              <Activity size={32} className="text-white" />
+            <div className="relative bg-gradient-to-br from-gray-600 to-gray-800 dark:from-gray-800 dark:to-black rounded-2xl flex items-center justify-center overflow-hidden">
+              <img 
+                src="/logo.jpg" 
+                alt="SensorSP Logo" 
+                className="w-full h-full object-cover rounded-2xl"
+              />
             </div>
           </div>
           
           <h1 className={`text-4xl lg:text-5xl font-black mb-3 ${themeMode === 'light' ? 'text-black' : 'text-white'}`}>
-            Crear Cuenta
+            SensorSP
           </h1>
           <p className={`text-sm ${themeMode === 'light' ? 'text-black' : 'text-white'}`}>
             Únete a la plataforma de monitoreo inteligente

@@ -6,7 +6,7 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [themeMode, setThemeModeState] = useState<ThemeMode>(() => {
     const savedMode = localStorage.getItem('iot-dashboard-mode') as ThemeMode;
-    return savedMode || 'light';
+    return savedMode || 'dark';
   });
 
   useEffect(() => {

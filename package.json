@@ -1,5 +1,5 @@
 {
-  "name": "iot-das",
+  "name": "sensor-sp",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -45,8 +45,8 @@
   },
   "main": "electron/main.js",
   "build": {
-    "appId": "com.iotdas.app",
-    "productName": "IoT Dashboard",
+    "appId": "com.sensorsp.app",
+    "productName": "SensorSP",
     "directories": {
       "output": "release"
     },
@@ -64,7 +64,7 @@
           ]
         }
       ],
-      "icon": "public/vite.svg"
+      "icon": "public/logo.jpg"
     },
     "nsis": {
       "oneClick": false,

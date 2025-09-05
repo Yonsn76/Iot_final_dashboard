@@ -361,8 +361,12 @@ export const AdminDashboard: React.FC = () => {
       {/* Header */}
       <header className="text-center space-y-6 mt-8">
         <div className="flex items-center justify-center space-x-4 mb-6">
-          <div className="inline-flex items-center justify-center w-20 h-20 glass-effect border border-white/30 shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-105">
-            <Activity size={32} className={themeMode === 'light' ? 'text-black' : 'text-white'} />
+          <div className="inline-flex items-center justify-center w-20 h-20 glass-effect border border-white/30 shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-105 overflow-hidden rounded-2xl">
+            <img 
+              src="/logo.jpg" 
+              alt="SensorSP Logo" 
+              className="w-full h-full object-cover rounded-2xl"
+            />
           </div>
           
           {/* Notification Indicator */}
