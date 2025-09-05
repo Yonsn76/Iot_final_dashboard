@@ -289,9 +289,11 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onBackToLogin }) => 
                 type="button"
                 onClick={() => setFormData(prev => ({ ...prev, role: 'user' }))}
                 disabled={isSubmitting}
-                className={`p-4 glass-effect hover:bg-white/30 dark:hover:bg-black/30 transition-all duration-200 group ${
-                  formData.role === 'user' ? 'ring-2 ring-blue-500/50' : ''
-                }`}
+                className={`p-4 rounded-2xl border-2 transition-all duration-300 group ${
+                  formData.role === 'user' 
+                    ? 'border-emerald-500 bg-emerald-50/50 dark:bg-emerald-900/20 shadow-lg shadow-emerald-500/20' 
+                    : 'border-gray-200 dark:border-gray-700 bg-white/20 dark:bg-black/20 hover:border-emerald-300 hover:bg-emerald-50/30 dark:hover:bg-emerald-900/10'
+                } ${isSubmitting ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105'}`}
               >
                 <div className="flex items-center space-x-3">
                   <div className="p-2 bg-gradient-to-br from-emerald-600 to-emerald-800 dark:from-emerald-700 dark:to-emerald-800 rounded-xl text-white">
@@ -307,9 +309,11 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onBackToLogin }) => 
                 type="button"
                 onClick={() => setFormData(prev => ({ ...prev, role: 'admin' }))}
                 disabled={isSubmitting}
-                className={`p-4 glass-effect hover:bg-white/30 dark:hover:bg-black/30 transition-all duration-200 group ${
-                  formData.role === 'admin' ? 'ring-2 ring-blue-500/50' : ''
-                }`}
+                className={`p-4 rounded-2xl border-2 transition-all duration-300 group ${
+                  formData.role === 'admin' 
+                    ? 'border-blue-500 bg-blue-50/50 dark:bg-blue-900/20 shadow-lg shadow-blue-500/20' 
+                    : 'border-gray-200 dark:border-gray-700 bg-white/20 dark:bg-black/20 hover:border-blue-300 hover:bg-blue-50/30 dark:hover:bg-blue-900/10'
+                } ${isSubmitting ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105'}`}
               >
                 <div className="flex items-center space-x-3">
                   <div className="p-2 bg-gradient-to-br from-blue-600 to-blue-800 dark:from-blue-800 dark:to-blue-900 rounded-xl text-white">
