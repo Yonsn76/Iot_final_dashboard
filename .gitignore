@@ -31,3 +31,7 @@ out/
 *.deb
 *.rpm
 *.AppImage
+electron/
+ELECTRON_README.md
+*ELECTRON*.md
+*electron*.md
