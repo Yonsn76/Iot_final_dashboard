@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { sensorApi } from '../services/sensorApi';
 import { notificationService } from '../services/notificationService';
+import { settingsService } from '../services/settingsService';
 import type { SensorData, SensorStats } from '../types/sensor';
 import { useTheme } from '../contexts/ThemeContext';
 import { TemperatureChart } from './TemperatureChart';
@@ -28,6 +29,7 @@ export const AdminDashboard: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [notificationCount, setNotificationCount] = useState(0);
+  const [refreshInterval, setRefreshInterval] = useState(settingsService.getRefreshInterval());
   const { themeMode } = useTheme();
   
   // GSAP Animations hook (available for future use)
@@ -67,6 +69,16 @@ export const AdminDashboard: React.FC = () => {
       const calculatedStats = sensorApi.calculateStats(filtered);
       setStats(calculatedStats);
       
+      // Evaluate notification rules for all sensors (especially the latest ones)
+      if (allSensorsData.length > 0) {
+        console.log('Evaluating notifications for all sensors...');
+        // Evaluate notifications for the most recent sensors
+        const recentSensors = allSensorsData.slice(0, 5); // Last 5 sensors
+        recentSensors.forEach(sensor => {
+          notificationService.evaluateSensorData(sensor);
+        });
+      }
+      
     } catch (err) {
       setError('Error al cargar los datos de sensores');
       console.error('Error fetching sensor data:', err);
@@ -103,14 +115,36 @@ export const AdminDashboard: React.FC = () => {
     fetchSensorData();
   }, [startDate, endDate]);
 
-  // Auto-refresh latest sensor data every 30 seconds
+  // Listen for settings changes
   useEffect(() => {
-    const interval = setInterval(() => {
-      fetchLatestSensorData();
-    }, 30000); // 30 seconds
-
-    return () => clearInterval(interval);
+    const handleSettingsChange = () => {
+      const newInterval = settingsService.getRefreshInterval();
+      setRefreshInterval(newInterval);
+      console.log('Settings changed, new refresh interval:', newInterval);
+    };
+    
+    settingsService.addListener(handleSettingsChange);
+    
+    return () => {
+      settingsService.removeListener(handleSettingsChange);
+    };
   }, []);
+
+  // Auto-refresh latest sensor data using settings interval
+  useEffect(() => {
+    const refreshIntervalMs = refreshInterval * 1000; // Convert to milliseconds
+    console.log(`Setting up auto-refresh interval: ${refreshIntervalMs}ms (${refreshInterval}s)`);
+    
+    const interval = setInterval(() => {
+      console.log('Auto-refreshing sensor data...');
+      fetchLatestSensorData();
+    }, refreshIntervalMs);
+
+    return () => {
+      console.log('Clearing auto-refresh interval');
+      clearInterval(interval);
+    };
+  }, [refreshInterval]); // Re-run when refresh interval changes
 
   // Listen for notifications and update count
   useEffect(() => {
@@ -398,6 +432,14 @@ export const AdminDashboard: React.FC = () => {
         <p className="text-lg lg:text-xl text-black dark:text-white max-w-3xl mx-auto font-medium">
           Monitoreo y análisis en tiempo real de sensores IoT
         </p>
+        
+        {/* Refresh Interval Indicator */}
+        <div className="flex items-center justify-center space-x-2 px-4 py-2 glass-effect border border-white/30 rounded-xl">
+          <Activity size={16} className="text-blue-500" />
+          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            Actualización automática cada {refreshInterval} segundos
+          </span>
+        </div>
       </header>
 
       {/* Date Filter */}

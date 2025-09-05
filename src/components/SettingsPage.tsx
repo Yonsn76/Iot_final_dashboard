@@ -1,39 +1,57 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Settings, User, Database, Shield, Palette, Moon, Sun, Save, RefreshCw } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { settingsService, type AppSettings } from '../services/settingsService';
 
 export const SettingsPage: React.FC = () => {
   const { user } = useAuth();
   const { themeMode, toggleThemeMode } = useTheme();
   
-  const [settings, setSettings] = useState({
-    notifications: {
-      email: true,
-      push: false,
-      critical: true,
-      updates: false
-    },
-    data: {
-      autoRefresh: true,
-      refreshInterval: 30,
-      maxRecords: 1000,
-      exportFormat: 'csv'
-    },
-    security: {
-      sessionTimeout: 60,
-      twoFactor: false,
-      loginAlerts: true
-    }
-  });
-
+  const [settings, setSettings] = useState<AppSettings>(settingsService.getSettings());
   const [isSaving, setIsSaving] = useState(false);
+
+  // Load settings from service on component mount
+  useEffect(() => {
+    setSettings(settingsService.getSettings());
+    
+    // Listen for settings changes
+    const handleSettingsChange = (newSettings: AppSettings) => {
+      setSettings(newSettings);
+    };
+    
+    settingsService.addListener(handleSettingsChange);
+    
+    return () => {
+      settingsService.removeListener(handleSettingsChange);
+    };
+  }, []);
 
   const handleSave = async () => {
     setIsSaving(true);
-    // Simulate saving
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    setIsSaving(false);
+    try {
+      // Settings are already saved automatically when they change
+      console.log('Settings manually saved:', settings);
+      
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    } catch (error) {
+      console.error('Error saving settings:', error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleSettingChange = (section: keyof AppSettings, key: string, value: any) => {
+    const newSettings = {
+      ...settings,
+      [section]: {
+        ...settings[section],
+        [key]: value
+      }
+    };
+    setSettings(newSettings);
+    settingsService.updateSettings(newSettings);
   };
 
   return (
@@ -184,7 +202,7 @@ export const SettingsPage: React.FC = () => {
                   Gestión de Datos
                 </h3>
                                  <p className="text-sm text-gray-800 dark:text-gray-400">
-                   Configuración de datos y exportación
+                   Configuración de datos y actualización
                  </p>
               </div>
             </div>
@@ -199,10 +217,7 @@ export const SettingsPage: React.FC = () => {
                 <input
                   type="number"
                   value={settings.data.refreshInterval}
-                  onChange={(e) => setSettings(prev => ({
-                    ...prev,
-                    data: { ...prev.data, refreshInterval: parseInt(e.target.value) }
-                  }))}
+                  onChange={(e) => handleSettingChange('data', 'refreshInterval', parseInt(e.target.value) || 30)}
                   className={`w-full px-4 py-3 glass-effect border border-white/30 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500/50 backdrop-blur-sm ${themeMode === 'light' ? 'text-black' : 'text-white'}`}
                 />
               </div>
@@ -214,10 +229,7 @@ export const SettingsPage: React.FC = () => {
                 <input
                   type="number"
                   value={settings.data.maxRecords}
-                  onChange={(e) => setSettings(prev => ({
-                    ...prev,
-                    data: { ...prev.data, maxRecords: parseInt(e.target.value) }
-                  }))}
+                  onChange={(e) => handleSettingChange('data', 'maxRecords', parseInt(e.target.value) || 1000)}
                   className={`w-full px-4 py-3 glass-effect border border-white/30 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500/50 backdrop-blur-sm ${themeMode === 'light' ? 'text-black' : 'text-white'}`}
                 />
               </div>

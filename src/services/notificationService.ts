@@ -86,6 +86,36 @@ class NotificationService {
         enabled: true,
         priority: 'critical',
         message: '¡Estado crítico detectado! El sensor está en estado crítico.'
+      },
+      {
+        id: 'default-temp-extreme',
+        name: 'Temperatura Extrema',
+        type: 'temperature',
+        condition: 'above',
+        value: 40,
+        enabled: true,
+        priority: 'critical',
+        message: '¡TEMPERATURA EXTREMA! La temperatura ha superado los 40°C. Acción inmediata requerida.'
+      },
+      {
+        id: 'default-humidity-extreme',
+        name: 'Humedad Extrema',
+        type: 'humidity',
+        condition: 'above',
+        value: 90,
+        enabled: true,
+        priority: 'critical',
+        message: '¡HUMEDAD EXTREMA! La humedad ha superado el 90%. Riesgo de condensación.'
+      },
+      {
+        id: 'default-temp-low',
+        name: 'Temperatura Baja',
+        type: 'temperature',
+        condition: 'below',
+        value: 10,
+        enabled: true,
+        priority: 'medium',
+        message: '¡Temperatura baja detectada! La temperatura ha bajado de 10°C.'
       }
     ];
 
@@ -272,19 +302,34 @@ class NotificationService {
     
     if ('Notification' in window) {
       console.log('Notifications API supported');
+      console.log('Current permission status:', Notification.permission);
+      
       if (Notification.permission === 'granted') {
         console.log('Notification permission granted, showing notification');
-        new Notification(notification.ruleName, {
-          body: notification.message,
-          icon: '/favicon.ico',
-          tag: notification.id,
-          requireInteraction: notification.priority === 'critical'
-        });
+        try {
+          const browserNotification = new Notification(notification.ruleName, {
+            body: notification.message,
+            icon: '/favicon.ico',
+            tag: notification.id,
+            requireInteraction: notification.priority === 'critical'
+          });
+          
+          // Add click handler to focus the window
+          browserNotification.onclick = () => {
+            window.focus();
+            browserNotification.close();
+          };
+          
+          console.log('Browser notification created successfully');
+        } catch (error) {
+          console.error('Error creating browser notification:', error);
+        }
       } else {
         console.log('Notification permission not granted:', Notification.permission);
+        console.log('To enable notifications, user must grant permission manually');
       }
     } else {
-      console.log('Notifications API not supported');
+      console.log('Notifications API not supported in this browser');
     }
   }
 
@@ -292,9 +337,28 @@ class NotificationService {
   async requestPermission(): Promise<boolean> {
     if ('Notification' in window) {
       const permission = await Notification.requestPermission();
+      console.log('Notification permission result:', permission);
       return permission === 'granted';
     }
     return false;
+  }
+
+  // Get current notification permission status
+  getPermissionStatus(): 'granted' | 'denied' | 'default' | 'unsupported' {
+    if ('Notification' in window) {
+      return Notification.permission as 'granted' | 'denied' | 'default';
+    }
+    return 'unsupported';
+  }
+
+  // Check if notifications are supported and enabled
+  isNotificationSupported(): boolean {
+    return 'Notification' in window;
+  }
+
+  // Check if notifications are enabled (permission granted)
+  isNotificationEnabled(): boolean {
+    return this.isNotificationSupported() && Notification.permission === 'granted';
   }
 
   // Mark notification as read

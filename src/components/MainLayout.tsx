@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Sidebar } from './Sidebar';
 import { AdminDashboard } from './AdminDashboard';
 import { SensorsPage } from './SensorsPage';
@@ -6,9 +6,32 @@ import { AnalyticsPage } from './AnalyticsPage';
 import { AlertsPage } from './AlertsPage';
 import { NotificationsPage } from './NotificationsPage';
 import { SettingsPage } from './SettingsPage';
+import { notificationService } from '../services/notificationService';
 
 export const MainLayout: React.FC = () => {
   const [currentPage, setCurrentPage] = useState('dashboard');
+
+  // Request notification permission on app startup
+  useEffect(() => {
+    const requestNotificationPermission = async () => {
+      // Check if permission is already granted
+      if ('Notification' in window && Notification.permission === 'default') {
+        console.log('Requesting notification permission on app startup...');
+        try {
+          const granted = await notificationService.requestPermission();
+          if (granted) {
+            console.log('Notification permission granted on startup');
+          } else {
+            console.log('Notification permission denied on startup');
+          }
+        } catch (error) {
+          console.error('Error requesting notification permission:', error);
+        }
+      }
+    };
+
+    requestNotificationPermission();
+  }, []);
 
   // Listen for navigation events from dashboard
   React.useEffect(() => {

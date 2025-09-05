@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { AlertTriangle, CheckCircle, Clock, Trash2, Filter, Bell } from 'lucide-react';
+import { AlertTriangle, CheckCircle, Clock, Trash2, Filter, Bell, Activity } from 'lucide-react';
 import { sensorApi } from '../services/sensorApi';
+import { settingsService } from '../services/settingsService';
 import type { SensorData } from '../types/sensor';
 import { useTheme } from '../contexts/ThemeContext';
 import { format } from 'date-fns';
@@ -19,18 +20,41 @@ export const AlertsPage: React.FC = () => {
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [filter, setFilter] = useState<'all' | 'unread' | 'critical'>('all');
   const [isLoading, setIsLoading] = useState(true);
+  const [refreshInterval, setRefreshInterval] = useState(settingsService.getRefreshInterval());
   const { themeMode } = useTheme();
+
+  // Listen for settings changes
+  useEffect(() => {
+    const handleSettingsChange = () => {
+      const newInterval = settingsService.getRefreshInterval();
+      setRefreshInterval(newInterval);
+      console.log('Alerts settings changed, new refresh interval:', newInterval);
+    };
+    
+    settingsService.addListener(handleSettingsChange);
+    
+    return () => {
+      settingsService.removeListener(handleSettingsChange);
+    };
+  }, []);
 
   useEffect(() => {
     generateAlertsFromSensorData();
     
-    // Auto-refresh alerts every 30 seconds
-    const interval = setInterval(() => {
-      generateAlertsFromSensorData();
-    }, 30000);
+    // Auto-refresh alerts using settings interval
+    const refreshIntervalMs = refreshInterval * 1000; // Convert to milliseconds
+    console.log(`Setting up alerts auto-refresh interval: ${refreshIntervalMs}ms (${refreshInterval}s)`);
     
-    return () => clearInterval(interval);
-  }, []);
+    const interval = setInterval(() => {
+      console.log('Auto-refreshing alerts...');
+      generateAlertsFromSensorData();
+    }, refreshIntervalMs);
+    
+    return () => {
+      console.log('Clearing alerts auto-refresh interval');
+      clearInterval(interval);
+    };
+  }, [refreshInterval]); // Re-run when refresh interval changes
 
   const generateAlertsFromSensorData = async () => {
     try {
@@ -77,7 +101,17 @@ export const AlertsPage: React.FC = () => {
         }
         
         // Additional alerts based on temperature thresholds
-        if (sensor.temperatura > 35) {
+        if (sensor.temperatura > 40) {
+          generatedAlerts.push({
+            id: `${sensor._id}-temp-critical-${Date.now()}`,
+            sensorId: sensor._id,
+            type: 'critical',
+            message: `🔥 TEMPERATURA CRÍTICA: ${sensor.temperatura}°C - Sensor ${sensor._id.slice(-8)}`,
+            timestamp: sensor.fecha,
+            read: false, // Critical alerts are always unread
+            sensorData: sensor
+          });
+        } else if (sensor.temperatura > 35) {
           generatedAlerts.push({
             id: `${sensor._id}-temp-high-${Date.now()}`,
             sensorId: sensor._id,
@@ -100,7 +134,17 @@ export const AlertsPage: React.FC = () => {
         }
         
         // Additional alerts based on humidity thresholds
-        if (sensor.humedad > 80) {
+        if (sensor.humedad > 90) {
+          generatedAlerts.push({
+            id: `${sensor._id}-humidity-critical-${Date.now()}`,
+            sensorId: sensor._id,
+            type: 'critical',
+            message: `💧 HUMEDAD CRÍTICA: ${sensor.humedad}% - Sensor ${sensor._id.slice(-8)}`,
+            timestamp: sensor.fecha,
+            read: false, // Critical alerts are always unread
+            sensorData: sensor
+          });
+        } else if (sensor.humedad > 80) {
           generatedAlerts.push({
             id: `${sensor._id}-humidity-high-${Date.now()}`,
             sensorId: sensor._id,
@@ -123,13 +167,9 @@ export const AlertsPage: React.FC = () => {
         }
       });
 
-      // Sort by timestamp (most recent first) and remove duplicates based on sensor ID and type
-      const uniqueAlerts = generatedAlerts.filter((alert, index, self) => 
-        index === self.findIndex(a => a.sensorId === alert.sensorId && a.type === alert.type)
-      );
-      
-      uniqueAlerts.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-      setAlerts(uniqueAlerts);
+             // Sort by timestamp (most recent first) - Show ALL alerts, no duplicates removal
+       generatedAlerts.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+       setAlerts(generatedAlerts);
     } catch (error) {
       console.error('Error generating alerts:', error);
     } finally {
@@ -198,6 +238,15 @@ export const AlertsPage: React.FC = () => {
         <p className="text-black dark:text-white max-w-2xl mx-auto">
           Gestiona las notificaciones y alertas del sistema IoT
         </p>
+        
+        {/* Refresh Interval Indicator */}
+        <div className="flex items-center justify-center space-x-2 px-4 py-2 glass-effect border border-white/30 rounded-xl">
+          <Activity size={16} className="text-blue-500" />
+          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            Actualización automática cada {refreshInterval} segundos
+          </span>
+        </div>
+        
         <div className={`text-sm ${themeMode === 'light' ? 'text-black' : 'text-white'} opacity-75`}>
           Última actualización: {alerts.length > 0 ? format(new Date(alerts[0]?.timestamp), 'dd/MM/yyyy HH:mm:ss') : 'N/A'}
         </div>

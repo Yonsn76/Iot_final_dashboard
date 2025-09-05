@@ -10,12 +10,14 @@ export const NotificationsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'rules' | 'notifications'>('rules');
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [notificationStats, setNotificationStats] = useState(notificationService.getNotificationStats());
+  const [permissionStatus, setPermissionStatus] = useState(notificationService.getPermissionStatus());
 
-  // Load notifications
+  // Load notifications and permission status
   useEffect(() => {
     const updateNotifications = () => {
       setNotifications(notificationService.getNotifications());
       setNotificationStats(notificationService.getNotificationStats());
+      setPermissionStatus(notificationService.getPermissionStatus());
     };
 
     // Initial load
@@ -48,6 +50,32 @@ export const NotificationsPage: React.FC = () => {
     notificationService.deleteNotification(notificationId);
     setNotifications(notificationService.getNotifications());
     setNotificationStats(notificationService.getNotificationStats());
+  };
+
+  const handleRequestPermission = async () => {
+    const granted = await notificationService.requestPermission();
+    setPermissionStatus(notificationService.getPermissionStatus());
+    
+    if (granted) {
+      alert('¡Permisos de notificación concedidos! Ahora recibirás alertas del navegador.');
+    } else {
+      alert('Los permisos de notificación fueron denegados. Puedes habilitarlos manualmente en la configuración del navegador.');
+    }
+  };
+
+  const getPermissionStatusText = () => {
+    switch (permissionStatus) {
+      case 'granted':
+        return { text: 'Permisos concedidos', color: 'text-green-600 dark:text-green-400', icon: CheckCircle };
+      case 'denied':
+        return { text: 'Permisos denegados', color: 'text-red-600 dark:text-red-400', icon: XCircle };
+      case 'default':
+        return { text: 'Permisos no solicitados', color: 'text-yellow-600 dark:text-yellow-400', icon: AlertTriangle };
+      case 'unsupported':
+        return { text: 'No soportado', color: 'text-gray-600 dark:text-gray-400', icon: Info };
+      default:
+        return { text: 'Desconocido', color: 'text-gray-600 dark:text-gray-400', icon: Info };
+    }
   };
 
   const handleClearAll = () => {
@@ -90,22 +118,38 @@ export const NotificationsPage: React.FC = () => {
           Gestiona las reglas de notificación y revisa las alertas del sistema
         </p>
         
-                 {/* Action Buttons */}
-         <div className="flex justify-center space-x-4">
-           <button
-             onClick={async () => {
-               const granted = await notificationService.requestPermission();
-               if (granted) {
-                 alert('¡Permisos de notificación concedidos! Ahora recibirás alertas del navegador.');
-               } else {
-                 alert('Los permisos de notificación fueron denegados. Puedes habilitarlos manualmente en la configuración del navegador.');
-               }
-             }}
-             className="px-6 py-3 glass-effect border border-white/30 text-black dark:text-white hover:bg-white/40 dark:hover:bg-black/40 font-medium rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center space-x-2"
-           >
-             <Bell size={20} />
-             <span>Habilitar Notificaciones del Navegador</span>
-           </button>
+                 {/* Permission Status and Action Buttons */}
+         <div className="flex flex-col items-center space-y-4">
+           {/* Permission Status */}
+           <div className="flex items-center space-x-2 px-4 py-2 glass-effect border border-white/30 rounded-xl">
+             {(() => {
+               const statusInfo = getPermissionStatusText();
+               const StatusIcon = statusInfo.icon;
+               return (
+                 <>
+                   <StatusIcon size={20} className={statusInfo.color} />
+                   <span className={`font-medium ${statusInfo.color}`}>
+                     Estado: {statusInfo.text}
+                   </span>
+                 </>
+               );
+             })()}
+           </div>
+           
+           {/* Action Buttons */}
+           <div className="flex justify-center space-x-4">
+             <button
+               onClick={handleRequestPermission}
+               disabled={permissionStatus === 'granted'}
+               className={`px-6 py-3 glass-effect border border-white/30 text-black dark:text-white hover:bg-white/40 dark:hover:bg-black/40 font-medium rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center space-x-2 ${
+                 permissionStatus === 'granted' ? 'opacity-50 cursor-not-allowed' : ''
+               }`}
+             >
+               <Bell size={20} />
+               <span>
+                 {permissionStatus === 'granted' ? 'Notificaciones Habilitadas' : 'Habilitar Notificaciones del Navegador'}
+               </span>
+             </button>
            
            <button
              onClick={() => {
@@ -121,6 +165,30 @@ export const NotificationsPage: React.FC = () => {
              <RefreshCw size={20} />
              <span>Reiniciar Reglas</span>
            </button>
+           
+           <button
+             onClick={async () => {
+               // Test notification with sample data
+               const testSensorData = {
+                 _id: 'test-sensor-123',
+                 temperatura: 42, // High temperature to trigger notification
+                 humedad: 85,    // High humidity to trigger notification
+                 actuador: 'ventilador',
+                 estado: 'critico' as const,
+                 fecha: new Date().toISOString(),
+                 ubicacion: 'Sala de Pruebas'
+               };
+               
+               console.log('Testing notification with sample data:', testSensorData);
+               notificationService.evaluateSensorData(testSensorData);
+               alert('Notificación de prueba enviada. Revisa la consola para ver los logs.');
+             }}
+             className="px-6 py-3 glass-effect border border-white/30 text-black dark:text-white hover:bg-white/40 dark:hover:bg-black/40 font-medium rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center space-x-2"
+           >
+             <Bell size={20} />
+             <span>Probar Notificación</span>
+           </button>
+           </div>
          </div>
       </header>
 
