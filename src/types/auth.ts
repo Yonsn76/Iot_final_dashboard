@@ -14,11 +14,20 @@ export interface AuthState {
 }
 
 export interface LoginCredentials {
-  username: string;
+  username?: string;
+  email?: string;
   password: string;
+}
+
+export interface RegisterCredentials {
+  username: string;
+  email: string;
+  password: string;
+  role: 'user' | 'admin';
 }
 
 export interface AuthContextType extends AuthState {
   login: (credentials: LoginCredentials) => Promise<void>;
+  register: (credentials: RegisterCredentials) => Promise<void>;
   logout: () => void;
 }

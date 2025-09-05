@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
-import { ChevronUp, ChevronDown, X } from 'lucide-react';
+import { ChevronUp, ChevronDown, X, Bug } from 'lucide-react';
 
 export const DebugLogin: React.FC = () => {
   const { isAuthenticated, isLoading, user } = useAuth();
@@ -16,99 +16,50 @@ export const DebugLogin: React.FC = () => {
 
   if (!isVisible) {
     return (
-      <div style={{
-        position: 'fixed',
-        top: '10px',
-        right: '10px',
-        background: themeMode === 'light' ? '#000' : '#fff',
-        color: themeMode === 'light' ? '#fff' : '#000',
-        padding: '8px',
-        borderRadius: '5px',
-        fontSize: '12px',
-        zIndex: 9999,
-        cursor: 'pointer',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '8px',
-        border: themeMode === 'light' ? '1px solid #333' : '1px solid #ccc',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
-      }}
-      onClick={() => setIsVisible(true)}
-      title="Click para mostrar debug info">
-        <span>🔧</span>
-        <span>Debug</span>
+      <div 
+        className={`fixed top-4 right-4 glass-effect rounded-2xl p-3 cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-2xl z-50 ${
+          themeMode === 'light' 
+            ? 'bg-white/20 border-white/30 text-black hover:bg-white/30' 
+            : 'bg-black/20 border-white/20 text-white hover:bg-black/30'
+        }`}
+        onClick={() => setIsVisible(true)}
+        title="Click para mostrar debug info"
+      >
+        <div className="flex items-center gap-2">
+          <Bug size={16} className="text-blue-500" />
+          <span className="text-sm font-medium">Debug</span>
+        </div>
       </div>
     );
   }
 
   return (
-    <div style={{
-      position: 'fixed',
-      top: '10px',
-      right: '10px',
-      background: themeMode === 'light' ? '#000' : '#fff',
-      color: themeMode === 'light' ? '#fff' : '#000',
-      padding: '10px',
-      borderRadius: '5px',
-      fontSize: '12px',
-      zIndex: 9999,
-      maxWidth: '200px',
-      boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
-      border: themeMode === 'light' ? '1px solid #333' : '1px solid #ccc'
-    }}>
+    <div className={`fixed top-4 right-4 glass-effect rounded-2xl p-4 max-w-xs z-50 transition-all duration-300 hover:shadow-2xl ${
+      themeMode === 'light' 
+        ? 'bg-white/20 border-white/30 text-black' 
+        : 'bg-black/20 border-white/20 text-white'
+    }`}>
       {/* Header con controles */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: '8px',
-        borderBottom: `1px solid ${themeMode === 'light' ? '#fff' : '#333'}`,
-        paddingBottom: '4px'
-      }}>
-        <span style={{ fontWeight: 'bold' }}>Auth Debug</span>
-        <div style={{ display: 'flex', gap: '4px' }}>
+      <div className="flex justify-between items-center mb-3 pb-2 border-b border-white/20">
+        <div className="flex items-center gap-2">
+          <Bug size={16} className="text-blue-500" />
+          <span className="font-bold text-sm">Auth Debug</span>
+        </div>
+        <div className="flex gap-1">
           <button
             onClick={() => setIsMinimized(!isMinimized)}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: themeMode === 'light' ? '#fff' : '#000',
-              cursor: 'pointer',
-              padding: '2px',
-              borderRadius: '2px',
-              display: 'flex',
-              alignItems: 'center',
-              transition: 'all 0.2s ease'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = themeMode === 'light' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'none';
-            }}
+            className={`p-1 rounded-lg transition-all duration-200 hover:bg-white/20 ${
+              themeMode === 'light' ? 'text-black hover:text-gray-700' : 'text-white hover:text-gray-300'
+            }`}
             title={isMinimized ? 'Expandir' : 'Minimizar'}
           >
             {isMinimized ? <ChevronDown size={14} /> : <ChevronUp size={14} />}
           </button>
           <button
             onClick={() => setIsVisible(false)}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: themeMode === 'light' ? '#fff' : '#000',
-              cursor: 'pointer',
-              padding: '2px',
-              borderRadius: '2px',
-              display: 'flex',
-              alignItems: 'center',
-              transition: 'all 0.2s ease'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = themeMode === 'light' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'none';
-            }}
+            className={`p-1 rounded-lg transition-all duration-200 hover:bg-white/20 ${
+              themeMode === 'light' ? 'text-black hover:text-gray-700' : 'text-white hover:text-gray-300'
+            }`}
             title="Ocultar"
           >
             <X size={14} />
@@ -118,11 +69,26 @@ export const DebugLogin: React.FC = () => {
 
       {/* Contenido */}
       {!isMinimized && (
-        <>
-          <div>Loading: {isLoading ? 'Yes' : 'No'}</div>
-          <div>Authenticated: {isAuthenticated ? 'Yes' : 'No'}</div>
-          <div>User: {user?.username || 'None'}</div>
-        </>
+        <div className="space-y-2 text-xs">
+          <div className="flex items-center gap-2">
+            <div className={`w-2 h-2 rounded-full ${isLoading ? 'bg-yellow-500 animate-pulse' : 'bg-green-500'}`}></div>
+            <span>Loading: {isLoading ? 'Yes' : 'No'}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className={`w-2 h-2 rounded-full ${isAuthenticated ? 'bg-green-500' : 'bg-red-500'}`}></div>
+            <span>Authenticated: {isAuthenticated ? 'Yes' : 'No'}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className={`w-2 h-2 rounded-full ${user ? 'bg-blue-500' : 'bg-gray-500'}`}></div>
+            <span>User: {user?.username || 'None'}</span>
+          </div>
+          {user && (
+            <div className="flex items-center gap-2">
+              <div className={`w-2 h-2 rounded-full ${user.role === 'admin' ? 'bg-purple-500' : 'bg-emerald-500'}`}></div>
+              <span>Role: {user.role}</span>
+            </div>
+          )}
+        </div>
       )}
     </div>
   );

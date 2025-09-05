@@ -18,7 +18,7 @@ const COLORS = [
   '#f97316', // Orange
 ];
 
-export const ActuatorChart: React.FC<ActuatorChartProps> = ({ data, title = "Distribución de Actuadores" }) => {
+export const ActuatorChart: React.FC<ActuatorChartProps> = ({ data }) => {
   // Count actuator types
   const actuatorCounts = data.reduce((acc, sensor) => {
     const actuator = sensor.actuador || 'ninguno';
@@ -96,7 +96,7 @@ export const ActuatorChart: React.FC<ActuatorChartProps> = ({ data, title = "Dis
             fill="#8884d8"
             dataKey="value"
           >
-            {chartData.map((entry, index) => (
+            {chartData.map((_, index) => (
               <Cell 
                 key={`cell-${index}`} 
                 fill={COLORS[index % COLORS.length]} 

@@ -1,13 +1,15 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { ThemeProvider, useTheme } from './contexts/ThemeContext'
-import { ModernLoginForm } from './components/ModernLoginForm'
+import { LoginForm } from './components/LoginForm'
+import { RegisterForm } from './components/RegisterForm'
 import { MainLayout } from './components/MainLayout'
 import { DebugLogin } from './components/DebugLogin'
 
 const AppContent: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth()
   const { themeMode } = useTheme()
+  const [showRegister, setShowRegister] = useState(false)
 
   if (isLoading) {
     return (
@@ -24,7 +26,13 @@ const AppContent: React.FC = () => {
   return (
     <>
       <DebugLogin />
-      {isAuthenticated ? <MainLayout /> : <ModernLoginForm />}
+      {isAuthenticated ? (
+        <MainLayout />
+      ) : showRegister ? (
+        <RegisterForm onBackToLogin={() => setShowRegister(false)} />
+      ) : (
+        <LoginForm onGoToRegister={() => setShowRegister(true)} />
+      )}
     </>
   )
 }

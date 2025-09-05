@@ -30,14 +30,8 @@ export const AdminDashboard: React.FC = () => {
   const [notificationCount, setNotificationCount] = useState(0);
   const { themeMode } = useTheme();
   
-  // GSAP Animations
-  const { 
-    animateHeader, 
-    animateStatsCards, 
-    animateCharts, 
-    animateTable,
-    animateIn 
-  } = useGSAPAnimations();
+  // GSAP Animations hook (available for future use)
+  useGSAPAnimations();
   
   // Refs for animations
   const headerRef = useRef<HTMLElement>(null);
